@@ -16,7 +16,8 @@ class SimpleComplianceAgent:
             "issues": []
         }
 
-        # TDS evaluation
+        # Simplified Logic: Check if threshold is exceeded
+        # Real-world would check annual aggregate, but for transaction-level:
         if "tds_section" in rules:
             threshold = rules.get("threshold", 0)
             if amount >= threshold:
@@ -25,18 +26,18 @@ class SimpleComplianceAgent:
                 result["issues"].append({
                     "type": "TDS",
                     "section": rules["tds_section"],
-                    "rate": rules.get("tds_rate"),
-                    "reason": "Amount exceeds TDS threshold"
+                    "rate": f"{rules.get('tds_rate')}%",
+                    "reason": f"Amount {amount} exceeds threshold of {threshold} for Sec {rules['tds_section']}."
                 })
 
         # GST evaluation
         if rules.get("gst_applicable"):
             result["gst_applicable"] = True
 
-        if result["compliance_status"] == "Compliant":
+        if not result["issues"]:
             result["issues"].append({
                 "type": "None",
-                "reason": "No compliance action required"
+                "reason": "No immediate compliance action required for this single transaction."
             })
 
         return result

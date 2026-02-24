@@ -26,11 +26,11 @@ export const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            {isAuthenticated ? (
+            {isAuthenticated() ? (
               <>
                 <div className="hidden md:flex items-center gap-2 text-sm text-slate-600">
                   <User className="w-4 h-4" />
-                  <span>{user?.businessName}</span>
+                  <span>{user?.email}</span>
                 </div>
                 <Button variant="ghost" size="sm" onClick={handleLogout}>
                   <LogOut className="w-4 h-4 mr-2" />

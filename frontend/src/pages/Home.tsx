@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Navbar } from "../components/layout/Navbar";
 import { Button } from "../components/ui/Button";
+import { useAuth } from "../context/AuthContext";
 import {
   ShieldCheck,
   FileText,
@@ -13,29 +13,21 @@ import {
   Users,
 } from "lucide-react";
 
-/**
- * Basic auth check helper.
- * Replace with your real auth state (context / redux / auth provider) as needed.
- */
-const isAuthenticated = () => {
-  // Example: token present in localStorage
-  return Boolean(localStorage.getItem("token"));
-};
-
 /* ---------------------- HOME PAGE ---------------------- */
 
 export const Home = () => {
   const navigate = useNavigate();
+  const auth = useAuth();
 
   const handleEnterCompliance = useCallback(() => {
-    if (isAuthenticated()) {
+    if (auth.isAuthenticated()) {
       // user is signed in -> go to dashboard (changed per request)
       navigate("/dashboard");
     } else {
       // not signed in -> go to login, after login redirect to dashboard
       navigate("/login", { state: { afterLogin: "/dashboard" } });
     }
-  }, [navigate]);
+  }, [navigate, auth]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0B1020] via-[#0E1630] to-[#0B1020] text-slate-200">
@@ -172,7 +164,7 @@ export const Home = () => {
         {/* Subtle blue glow (very controlled) */}
         <div className="absolute -top-48 -left-48 w-[600px] h-[600px] 
                         bg-blue-500/15 rounded-full blur-[160px]" />
-        
+
         <div className="absolute -bottom-48 -right-48 w-[600px] h-[600px] 
                         bg-indigo-500/15 rounded-full blur-[160px]" />
 
@@ -221,9 +213,8 @@ const CompareCard = ({
 }) => (
   <div className="rounded-2xl p-8 bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl">
     <h3
-      className={`font-bold mb-6 text-xl ${
-        color === "red" ? "text-red-400" : "text-green-400"
-      }`}
+      className={`font-bold mb-6 text-xl ${color === "red" ? "text-red-400" : "text-green-400"
+        }`}
     >
       {title}
     </h3>

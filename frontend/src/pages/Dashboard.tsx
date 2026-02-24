@@ -3,7 +3,8 @@ import { Navbar } from '../components/layout/Navbar';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
-import { checkCompliance, TransactionInput, ComplianceResult } from '../lib/mockAgents';
+import { analyzeComplianceViaBackend } from '../lib/api';
+import { TransactionInput, ComplianceResult } from '../lib/mockAgents';
 import { formatCurrency } from '../lib/utils';
 import { Loader2, AlertTriangle, CheckCircle2, FileText, ArrowRight, Sparkles } from 'lucide-react';
 
@@ -20,24 +21,27 @@ export const Dashboard = () => {
   const [isChecking, setIsChecking] = useState(false);
   const [result, setResult] = useState<ComplianceResult | null>(null);
   const [history, setHistory] = useState<any[]>([]);
+  const [error, setError] = useState("");
 
   const handleCheck = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsChecking(true);
     setResult(null);
+    setError("");
 
     try {
-      const complianceResult = await checkCompliance(formData);
+      const complianceResult = await analyzeComplianceViaBackend(formData);
       setResult(complianceResult);
-      
+
       // Add to history if compliant or checked
       setHistory(prev => [{
         ...formData,
         status: complianceResult.status,
         timestamp: new Date()
       }, ...prev]);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      setError("Failed to connect to AI Agents. Please ensure backend is running.");
     } finally {
       setIsChecking(false);
     }
@@ -46,10 +50,10 @@ export const Dashboard = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* LEFT: INPUT FORM */}
           <div className="lg:col-span-5 space-y-6">
             <div>
@@ -61,59 +65,59 @@ export const Dashboard = () => {
               <form onSubmit={handleCheck} className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     required
                     placeholder="e.g. Office Rent for March"
                     className="w-full h-10 rounded-md border-slate-300 border px-3 text-sm focus:ring-2 focus:ring-indigo-500"
                     value={formData.description}
-                    onChange={e => setFormData({...formData, description: e.target.value})}
+                    onChange={e => setFormData({ ...formData, description: e.target.value })}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Amount (INR)</label>
-                    <input 
-                      type="number" 
+                    <input
+                      type="number"
                       required
                       min="1"
                       className="w-full h-10 rounded-md border-slate-300 border px-3 text-sm focus:ring-2 focus:ring-indigo-500"
                       value={formData.amount || ''}
-                      onChange={e => setFormData({...formData, amount: parseFloat(e.target.value)})}
+                      onChange={e => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
-                    <input 
-                      type="date" 
+                    <input
+                      type="date"
                       required
                       className="w-full h-10 rounded-md border-slate-300 border px-3 text-sm focus:ring-2 focus:ring-indigo-500"
                       value={formData.date}
-                      onChange={e => setFormData({...formData, date: e.target.value})}
+                      onChange={e => setFormData({ ...formData, date: e.target.value })}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Counterparty Name</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     required
                     placeholder="e.g. ABC Properties"
                     className="w-full h-10 rounded-md border-slate-300 border px-3 text-sm focus:ring-2 focus:ring-indigo-500"
                     value={formData.counterparty}
-                    onChange={e => setFormData({...formData, counterparty: e.target.value})}
+                    onChange={e => setFormData({ ...formData, counterparty: e.target.value })}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Type Hint</label>
-                    <select 
+                    <select
                       className="w-full h-10 rounded-md border-slate-300 border px-3 text-sm focus:ring-2 focus:ring-indigo-500"
                       value={formData.typeHint}
-                      onChange={e => setFormData({...formData, typeHint: e.target.value})}
+                      onChange={e => setFormData({ ...formData, typeHint: e.target.value })}
                     >
                       <option value="Rent">Rent</option>
                       <option value="Service">Professional Service</option>
@@ -123,10 +127,10 @@ export const Dashboard = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Frequency</label>
-                    <select 
+                    <select
                       className="w-full h-10 rounded-md border-slate-300 border px-3 text-sm focus:ring-2 focus:ring-indigo-500"
                       value={formData.frequency}
-                      onChange={e => setFormData({...formData, frequency: e.target.value as any})}
+                      onChange={e => setFormData({ ...formData, frequency: e.target.value as any })}
                     >
                       <option value="monthly">Monthly</option>
                       <option value="one-time">One-Time</option>
@@ -142,24 +146,30 @@ export const Dashboard = () => {
 
             {/* Recent History */}
             <div className="pt-4">
-               <h3 className="text-sm font-bold text-slate-900 mb-3">Recent Checks</h3>
-               <div className="space-y-3">
-                 {history.length === 0 && <p className="text-sm text-slate-400 italic">No history yet.</p>}
-                 {history.slice(0, 3).map((item, i) => (
-                   <div key={i} className="bg-white p-3 rounded-lg border border-slate-200 flex justify-between items-center text-sm">
-                     <div>
-                       <p className="font-medium text-slate-900">{item.description}</p>
-                       <p className="text-slate-500">{formatCurrency(item.amount)} • {item.date}</p>
-                     </div>
-                     <Badge variant={item.status === 'Compliant' ? 'success' : 'error'}>{item.status}</Badge>
-                   </div>
-                 ))}
-               </div>
+              <h3 className="text-sm font-bold text-slate-900 mb-3">Recent Checks</h3>
+              <div className="space-y-3">
+                {history.length === 0 && <p className="text-sm text-slate-400 italic">No history yet.</p>}
+                {history.slice(0, 3).map((item, i) => (
+                  <div key={i} className="bg-white p-3 rounded-lg border border-slate-200 flex justify-between items-center text-sm">
+                    <div>
+                      <p className="font-medium text-slate-900">{item.description}</p>
+                      <p className="text-slate-500">{formatCurrency(item.amount)} • {item.date}</p>
+                    </div>
+                    <Badge variant={item.status === 'Compliant' ? 'success' : 'error'}>{item.status}</Badge>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* RIGHT: RESULTS */}
           <div className="lg:col-span-7">
+            {error && (
+              <div className="mb-6 p-4 bg-rose-50 text-rose-600 rounded-lg border border-rose-100 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+                <p className="text-sm font-medium">{error}</p>
+              </div>
+            )}
             {isChecking ? (
               <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-white rounded-xl border border-slate-200">
                 <Loader2 className="w-10 h-10 text-indigo-600 animate-spin mb-4" />

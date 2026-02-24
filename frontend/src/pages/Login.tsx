@@ -4,33 +4,48 @@ import { useAuth } from "../context/AuthContext";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { ShieldCheck } from "lucide-react";
+import { GoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const auth = useAuth();
   const navigate = useNavigate();
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const response = await axios.post('http://localhost:8000/api/auth/google', {
+        credential: credentialResponse.credential
+      });
+
+      const { token, user } = response.data;
+      auth.login(user.email, token);
+      navigate("/dashboard", { replace: true });
+    } catch (err: any) {
+      console.error("Google login failed", err);
+      setError("Google authentication failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
     try {
-      // TODO: call your auth API here and get a real token
-      // const { token } = await api.login({ email, password });
-      // auth.login(email, token);
-
-      // Simulated login (replace with real)
+      // Simulated login
       await new Promise((res) => setTimeout(res, 600));
-      auth.login(email, "server-returned-token-or-demo-token");
-
-      // After successful login go to Home ("/") so user can click Enter Compliance
-      // (or you can navigate directly to /dashboard if you prefer)
-      navigate("/", { replace: true });
+      auth.login(email, "demo-token");
+      navigate("/dashboard", { replace: true });
     } catch (err) {
-      console.error("Login failed", err);
-      // show error to user
+      setError("Invalid email or password");
     } finally {
       setIsLoading(false);
     }
@@ -48,33 +63,62 @@ export const Login = () => {
         </div>
 
         <Card className="bg-white shadow-xl border-slate-200">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">
+              {error}
+            </div>
+          )}
+
+          <div className="flex justify-center mb-6">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError("Google Login Failed")}
+              useOneTap
+              theme="filled_blue"
+              shape="pill"
+            />
+          </div>
+
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-slate-200"></span>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-slate-400">Or continue with email</span>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="email"
-              placeholder="Email"
-              required
-              className="w-full h-10 border rounded px-3"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <div>
+              <input
+                type="email"
+                placeholder="Email"
+                required
+                className="w-full h-11 border border-slate-200 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
-            <input
-              type="password"
-              placeholder="Password"
-              required
-              className="w-full h-10 border rounded px-3"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div>
+              <input
+                type="password"
+                placeholder="Password"
+                required
+                className="w-full h-11 border border-slate-200 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
-            <Button type="submit" className="w-full" isLoading={isLoading}>
+            <Button type="submit" className="w-full h-11" isLoading={isLoading}>
               Sign In
             </Button>
           </form>
 
-          <div className="mt-6 text-center text-sm">
-            Don’t have an <strong>account</strong>?{" "}
-            <Link to="/signup" className="text-indigo-600 font-medium">
+          <div className="mt-6 text-center text-sm text-slate-500">
+            Don’t have an account?{" "}
+            <Link to="/signup" className="text-indigo-600 font-semibold hover:text-indigo-700">
               Sign up
             </Link>
           </div>

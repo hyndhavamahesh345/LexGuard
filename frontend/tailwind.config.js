@@ -1,13 +1,26 @@
-// tailwind.config.js
-const defaultTheme = require('tailwindcss/defaultTheme')
-
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
-    './src/**/*.{js,jsx,ts,tsx}',
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {}
+    extend: {
+      colors: {
+        indigo: {
+          50: '#f5f7ff',
+          100: '#ebf0fe',
+          200: '#dce4fd',
+          300: '#c2cdfa',
+          400: '#a1adf5',
+          500: '#7d87ee',
+          600: '#6366f1',
+          700: '#524ee1',
+          800: '#443fba',
+          900: '#3a3894',
+        }
+      }
+    }
   },
   plugins: [],
 };
