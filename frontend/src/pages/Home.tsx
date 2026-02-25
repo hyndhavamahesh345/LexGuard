@@ -3,17 +3,16 @@ import { useNavigate, Link } from "react-router-dom";
 import { Navbar } from "../components/layout/Navbar";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../context/AuthContext";
+import { motion } from "framer-motion";
 import {
   ShieldCheck,
-  FileText,
-  Layers,
-  GitMerge,
   CheckCircle2,
-  MessageSquare,
-  Users,
+  ArrowRight,
+  Zap,
+  Lock,
+  Search,
+  Globe
 } from "lucide-react";
-
-/* ---------------------- HOME PAGE ---------------------- */
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -21,242 +20,233 @@ export const Home = () => {
 
   const handleEnterCompliance = useCallback(() => {
     if (auth.isAuthenticated()) {
-      // user is signed in -> go to dashboard (changed per request)
       navigate("/dashboard");
     } else {
-      // not signed in -> go to login, after login redirect to dashboard
       navigate("/login", { state: { afterLogin: "/dashboard" } });
     }
   }, [navigate, auth]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0B1020] via-[#0E1630] to-[#0B1020] text-slate-200">
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
       <Navbar />
 
-      {/* ================= HERO ================= */}
-      <section className="relative overflow-hidden pt-28 pb-36">
-        {/* Background layers */}
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[120px]" />
-          <div className="absolute top-40 -right-40 w-[600px] h-[600px] bg-violet-600/20 rounded-full blur-[120px]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.05),transparent_60%)]" />
-        </div>
-
-        {/* Top-right auth buttons inside hero */}
-        <div className="absolute top-6 right-6 flex gap-3 z-20">
-          <Link to="/login">
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-white text-slate-900"
-            >
-              Sign In
-            </Button>
-          </Link>
-
-          <Link to="/signup">
-            <Button size="sm">
-              Sign Up
-            </Button>
-          </Link>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6 text-white">
-              AI-Driven Compliance <br />
-              <span className="text-indigo-400">
-                Built for Clarity
-              </span>
+      {/* ================= HERO SECTION ================= */}
+      <section className="relative pt-32 pb-20 px-6 overflow-hidden">
+        <div className="max-w-6xl mx-auto text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest uppercase bg-slate-100 rounded-full text-slate-500">
+              Introducing LexGuard AI 2.0
+            </span>
+            <h1 className="text-6xl md:text-[84px] font-semibold tracking-tight leading-[1.05] mb-8">
+              Compliance. <br />
+              <span className="text-[#86868b]">Reimagined with AI.</span>
             </h1>
-
-            <p className="text-slate-300 text-lg mb-10 max-w-xl">
-              Lexguard-AI helps businesses and accountants validate financial transaction against defined GST and TDS rules with clear, explainable insights, reducing manual effort and audit risk.
+            <p className="text-xl md:text-2xl text-[#86868b] mb-12 max-w-2xl mx-auto font-medium leading-relaxed">
+              Experience the future of financial regulation. Automated GST and TDS validation with the precision of a thousand experts.
             </p>
 
-            <div className="flex gap-4">
-              {/* Replaced Link with onClick handler to implement auth-aware flow */}
-              <Button size="lg" className="h-12 px-8" onClick={handleEnterCompliance}>
-                Enter Transaction details
-              </Button>
-            </div>
-
-            {/* Stats Glass Panel */}
-            <div className="mt-10 inline-flex gap-8 text-sm bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl px-6 py-4">
-              <span>✔ 12 laws monitored</span>
-              <span>✔ 3 amendments today</span>
-              <span>✔ 27 checks automated</span>
-            </div>
-          </div>
-
-          {/* Right Illustration */}
-          <div className="hidden lg:flex justify-center">
-            <div className="w-96 h-96 rounded-3xl bg-white/5 backdrop-blur-lg border border-white/10 flex items-center justify-center shadow-2xl">
-              <ShieldCheck size={160} className="text-indigo-400" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ================= COMPARISON ================= */}
-      <section className="py-24 bg-gradient-to-b from-[#0E1630] to-[#0B1020]">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10">
-          <CompareCard
-            title="Today's Reality"
-            color="red"
-            items={[
-              "Manual PDF law reviews",
-              "Missed amendments",
-              "Slow compliance checks",
-              "Late audit objections",
-            ]}
-          />
-          <CompareCard
-            title="With Lexguard-AI"
-            color="green"
-            items={[
-              "Auto-updated laws",
-              "AI clause mapping",
-              "Instant validation",
-              "Explainable decisions",
-            ]}
-          />
-        </div>
-      </section>
-
-      {/* ================= HOW IT WORKS ================= */}
-      <section className="py-24 bg-[#0B1020] border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-14 text-white">
-            How It Works
-          </h2>
-
-          <div className="grid md:grid-cols-5 gap-6 text-center">
-            <Agent icon={FileText} title="Law Monitor" desc="Tracks official legal updates" />
-            <Agent icon={Layers} title="Clause Engine" desc="Extracts legal clauses" />
-            <Agent icon={GitMerge} title="Version Control" desc="Applies correct law versions" />
-            <Agent icon={CheckCircle2} title="Compliance AI" desc="Validates transactions" />
-            <Agent icon={MessageSquare} title="Explainability" desc="Plain-English reasoning" />
-          </div>
-        </div>
-      </section>
-
-      {/* ================= WHO WE HELP ================= */}
-      <section className="py-24 bg-gradient-to-b from-[#0E1630] to-[#0B1020] border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-14 text-white">
-            Who We Help
-          </h2>
-
-          <div className="grid md:grid-cols-4 gap-6 text-center">
-            <Role title="Pay & Accounts Officers" desc="Pre-payment compliance checks" />
-            <Role title="Internal Auditors" desc="Audit-ready reports" />
-            <Role title="Senior Officers" desc="Risk-only visibility" />
-            <Role title="Oversight Teams" desc="Clause-linked audit trails" />
-          </div>
-        </div>
-      </section>
-
-      {/* ================= CTA ================= */}
-      <section className="relative py-24 text-center overflow-hidden 
-        bg-gradient-to-r from-[#0A1F44] via-[#0B2A5B] to-[#0C2F6D]">
-
-        {/* Subtle blue glow (very controlled) */}
-        <div className="absolute -top-48 -left-48 w-[600px] h-[600px] 
-                        bg-blue-500/15 rounded-full blur-[160px]" />
-
-        <div className="absolute -bottom-48 -right-48 w-[600px] h-[600px] 
-                        bg-indigo-500/15 rounded-full blur-[160px]" />
-
-        {/* Soft focus light */}
-        <div className="absolute inset-0 
-                        bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_65%)]" />
-
-        {/* Content */}
-        <div className="relative z-10">
-          <h2 className="text-3xl font-bold mb-6 text-white drop-shadow-sm">
-            Reduce Manual Compliance. Increase Trust.
-          </h2>
-
-          <div className="flex justify-center gap-4">
-            <Button size="lg" className="h-12 px-8 shadow-md" onClick={handleEnterCompliance}>
-              Start Compliance Check
-            </Button>
-
-            <Link to="/about">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <Button
-                variant="outline"
                 size="lg"
-                className="h-12 px-8 border-white/30 text-white 
-                          hover:bg-white/10 backdrop-blur-sm"
+                className="h-14 px-10 rounded-full bg-black text-white hover:bg-black/90 text-lg font-semibold transition-transform hover:scale-105 active:scale-95"
+                onClick={handleEnterCompliance}
               >
-                Learn More
+                Start Free Check
               </Button>
-            </Link>
+              <Link to="/about" className="group text-lg font-semibold flex items-center gap-1 hover:text-[#06c] transition-colors">
+                Learn how it works
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Hero Visual */}
+        <motion.div
+          initial={{ opacity: 0, y: 100 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-20 max-w-5xl mx-auto relative px-4"
+        >
+          <div className="apple-shadow rounded-[2rem] bg-gradient-to-b from-[#f5f5f7] to-white p-2 border border-slate-200 aspect-video flex items-center justify-center overflow-hidden">
+            <div className="w-full h-full bg-white rounded-[1.8rem] flex flex-col p-8 relative">
+              {/* Mock UI elements */}
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-3 h-3 rounded-full bg-red-400" />
+                <div className="w-3 h-3 rounded-full bg-amber-400" />
+                <div className="w-3 h-3 rounded-full bg-green-400" />
+                <div className="w-48 h-2 bg-slate-100 rounded-full ml-4" />
+              </div>
+              <div className="space-y-6">
+                <div className="h-8 w-3/4 bg-slate-50 rounded-lg animate-pulse" />
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="h-32 bg-slate-50 rounded-2xl animate-pulse" />
+                  <div className="h-32 bg-slate-50 rounded-2xl animate-pulse delay-75" />
+                  <div className="h-32 bg-slate-50 rounded-2xl animate-pulse delay-150" />
+                </div>
+                <div className="h-40 w-full bg-black/5 rounded-2xl border border-dashed border-slate-200 flex items-center justify-center">
+                  <ShieldCheck size={48} className="text-black opacity-10" />
+                </div>
+              </div>
+
+              {/* Floating Badge */}
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute bottom-12 right-12 glass apple-shadow px-6 py-4 rounded-3xl flex items-center gap-4 border-slate-200"
+              >
+                <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white">
+                  <CheckCircle2 size={24} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm">Compliant</h4>
+                  <p className="text-xs text-[#86868b]">Verified via AI Agent 4</p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ================= FEATURES SECTION ================= */}
+      <section className="py-32 bg-[#F5F5F7]">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-3 gap-12">
+            <Feature
+              icon={<Zap className="text-[#06c]" />}
+              title="Instant Analysis"
+              desc="Our proprietary AI agents process complex tax laws in milliseconds, not hours."
+            />
+            <Feature
+              icon={<Lock className="text-[#06c]" />}
+              title="Private by Design"
+              desc="Your financial data never leaves our secure perimeter. Privacy is not an option; it's our standard."
+            />
+            <Feature
+              icon={<Search className="text-[#06c]" />}
+              title="Explainable Logic"
+              desc="No black boxes. LexGuard provides clear, plain-English reasoning for every decision."
+            />
           </div>
         </div>
       </section>
+
+      {/* ================= PRODUCT DISPLAY ================= */}
+      <section className="py-40 bg-white">
+        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-24 items-center">
+          <motion.div
+            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: -50 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-5xl font-semibold tracking-tight mb-8 leading-tight">
+              A regulatory expert <br /> for every transaction.
+            </h2>
+            <p className="text-lg text-[#86868b] leading-relaxed mb-10 font-medium">
+              Manual law reviews are a thing of the past. LexGuard connects directly to official legal databases, mapping every clause to your specific financial context.
+            </p>
+            <ul className="space-y-4">
+              {['Automated Section Mapping', 'Real-time Threshold Monitoring', 'Audit-ready Documentation'].map((item) => (
+                <li key={item} className="flex items-center gap-3 font-semibold text-lg">
+                  <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-black">
+                    <CheckCircle2 size={16} />
+                  </div>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-6 pt-12">
+              <div className="glass apple-shadow p-6 rounded-[2rem] aspect-square flex flex-col justify-between">
+                <Globe size={32} className="text-[#06c]" />
+                <h3 className="font-bold text-xl">Global <br /> Standards</h3>
+              </div>
+              <div className="bg-black text-white p-6 rounded-[2rem] aspect-square flex flex-col justify-between">
+                <ShieldCheck size={32} className="text-white" />
+                <h3 className="font-bold text-xl">Bank-Grade <br /> Security</h3>
+              </div>
+            </div>
+            <div className="space-y-6">
+              <div className="apple-shadow bg-[#f5f5f7] p-6 rounded-[2rem] aspect-square flex flex-col justify-between border border-slate-200">
+                <Zap size={32} className="text-amber-500" />
+                <h3 className="font-bold text-xl">Real-time <br /> Updates</h3>
+              </div>
+              <div className="glass apple-shadow p-6 rounded-[2rem] aspect-square flex flex-col justify-between border-slate-200">
+                <Users size={32} className="text-purple-500" />
+                <h3 className="font-bold text-xl">Team <br /> Support</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= CTA SECTION ================= */}
+      <section className="py-40 bg-black text-white text-center px-6">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-5xl md:text-7xl font-semibold tracking-tight mb-10">Compliance at your <br /> fingertips.</h2>
+          <Button
+            size="lg"
+            className="h-16 px-12 rounded-full bg-white text-black hover:bg-white/90 text-xl font-bold transition-transform hover:scale-105"
+            onClick={handleEnterCompliance}
+          >
+            Get Started Now
+          </Button>
+          <p className="mt-8 text-[#86868b] font-medium tracking-tight">
+            Free for teams up to 5 members. No credit card required.
+          </p>
+        </div>
+      </section>
+
+      <footer className="py-12 bg-white border-t border-slate-100 text-center text-sm text-[#86868b] font-medium">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-2 font-bold text-black text-lg">
+            <ShieldCheck size={24} /> LexGuard AI
+          </div>
+          <p>© 2026 LexGuard Corporation. All rights reserved.</p>
+          <div className="flex gap-8">
+            <Link to="/privacy" className="hover:text-black">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-black">Terms of Service</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
 
 /* ---------------------- COMPONENTS ---------------------- */
 
-const CompareCard = ({
-  title,
-  color,
-  items,
-}: {
-  title: string;
-  color: "red" | "green";
-  items: string[];
-}) => (
-  <div className="rounded-2xl p-8 bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl">
-    <h3
-      className={`font-bold mb-6 text-xl ${color === "red" ? "text-red-400" : "text-green-400"
-        }`}
-    >
-      {title}
-    </h3>
-    <ul className="space-y-3 text-left">
-      {items.map((item) => (
-        <li key={item} className="flex gap-2">
-          <CheckCircle2 size={18} className="text-slate-400" />
-          {item}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
-
-const Agent = ({
-  icon: Icon,
-  title,
-  desc,
-}: {
-  icon: any;
-  title: string;
-  desc: string;
-}) => (
-  <div className="rounded-2xl p-6 bg-white/5 backdrop-blur-lg border border-white/10 shadow hover:shadow-2xl transition">
-    <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-indigo-500/20 flex items-center justify-center">
-      <Icon className="text-indigo-400" />
+const Feature = ({ icon, title, desc }: { icon: any, title: string, desc: string }) => (
+  <div className="flex flex-col">
+    <div className="w-12 h-12 mb-6 flex items-center justify-center bg-white rounded-2xl apple-shadow">
+      {icon}
     </div>
-    <h4 className="font-semibold text-white mb-1">{title}</h4>
-    <p className="text-sm text-slate-400">{desc}</p>
+    <h3 className="text-2xl font-semibold mb-4 tracking-tight">{title}</h3>
+    <p className="text-[#86868b] leading-relaxed font-medium">
+      {desc}
+    </p>
   </div>
 );
 
-const Role = ({
-  title,
-  desc,
-}: {
-  title: string;
-  desc: string;
-}) => (
-  <div className="rounded-2xl p-8 bg-white/5 backdrop-blur-lg border border-white/10 shadow">
-    <Users className="mx-auto text-indigo-400 mb-4" size={32} />
-    <h4 className="font-semibold text-white mb-2">{title}</h4>
-    <p className="text-sm text-slate-400">{desc}</p>
-  </div>
+const Users = ({ size, className }: { size: number, className: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
 );

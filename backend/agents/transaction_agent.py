@@ -1,5 +1,6 @@
 import re
 import os
+import json
 from google import genai
 from config import GOOGLE_API_KEY, MODEL_NAME
 
@@ -34,7 +35,6 @@ Example:
                 contents=prompt,
                 config={"response_mime_type": "application/json"}
             )
-            import json
             data = json.loads(response.text)
             return {
                 "transaction_type": data.get("transaction_type", "Other"),
@@ -64,7 +64,6 @@ Example:
 
         # Smarter Amount extraction: Look for larger numbers typically after keywords
         amount = 0
-        import re
         # Try to find numbers after keywords or currency symbols
         amounts = re.findall(r"(?:₹|rs\.?|inr|amt|amount|of)\s*([\d,]+(?:\.\d+)?)", text_lower)
         if not amounts:
