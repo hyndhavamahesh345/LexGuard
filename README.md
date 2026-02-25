@@ -63,8 +63,7 @@ LexGuard AI is built using **specialized AI agents**, each with a single respons
 
 ## 🔁 Workflow
 
-<img width="2736" height="2340" alt="_- visual selection (11)" src="https://github.com/user-attachments/assets/8f9fa3bc-d8a5-4df8-a99e-3648be552323" />
-
+<img width="878" height="719" alt="image" src="https://github.com/user-attachments/assets/57bcd87f-6b1c-4ff1-bafa-1f8ffc79d5fb" />
 
 
 ---
